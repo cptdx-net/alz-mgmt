@@ -14,14 +14,93 @@ git branch $branchName
 git checkout $branchName
 ~~~
 
+## Init Terraform
+
+### New branch
+
+~~~powershell
+$branchName="tf-backend-config"
+git branch $branchName
+# switch to the new branch
+git checkout $branchName
+~~~
+
+### Terraform settings
+
+At this point we should have run the github action CD action already once.
+Therefore we expect that the Terraform state file already exist on the storage account.
+
+> IMPORTANT: In case you did create an Service Principal and did create the corresponding variables, please make sure to assign your service principal the needed role on the storage account.
+
+~~~powershell
+# get the object Id of the currently logged in user
+$objectId=az ad signed-in-user show --query id -o tsv
+# switch to the subscription where the storage account is located
+az account list --query "[?user.name=='ga2@cptdx.net']"
+az account set -s bootstrap
+$storageId=az storage account list -g "rg-alz-mgmt-state-germanywestcentral-001" --query "[0].id" -o tsv
+# assign ourself the blob reader role for the corresponding storage account
+az role assignment create --role "Storage Blob Data Reader" --assignee-object-id $objectId --scope $storageId --assignee-principal-type User
+# verify if container exist
+az storage container list --auth-mode login --account-name "stoalzmgmger001zjln" -o table
+# verify if blob exist
+az storage blob list --auth-mode login  --account-name "stoalzmgmger001zjln" -c "mgmt-tfstate" -o table
+# switch back to our main subscription
+az account set -s "sub-01"
+~~~
+
+#### terraform.tf
+
+we need to add the current storage account as backend for the state file
 Modify the main.tf file to change the firewall sku to basic.
+
+~~~hcl
+backend "azurerm" {
+resource_group_name   = "<BACKEND_AZURE_RESOURCE_GROUP_NAME>"
+storage_account_name  = "<BACKEND_AZURE_STORAGE_ACCOUNT_NAME>"
+container_name        = "<BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME>"
+key                   = "<BACKEND_AZURE_STORAGE_ACCOUNT_STATE_FILE_NAME>"
+use_azuread_auth     = true
+subscription_id      = "<vars.BACKEND_AZURE_STORAGE_ACCOUNT_SUBSCRIPTION_ID>"
+tenant_id            = "<vars.BACKEND_AZURE_STORAGE_ACCOUNT_TENANT_ID>"
+}
+~~~
+
+> NOTE: Please replace the placeholders with the actual values.
+
+You can find most of the variables in the github repository variables.
+
+~~~powershell
+# list all github repository variables, show only name and value
+gh variable list --json name,value
+~~~
+
+#### Run terraform
+
+Init a local Terraform.
+
+> IMPORTANT: You should never change the state file directly. Always use the corresponding github action. To ensure that changes to the TF state file are not done by accident, your User should only have the "Blob Reader" role on the storage account.
+
+~~~powershell
+terraform init
+terraform plan -out=tfplan01 -lock=false
+terraform fmt
+terraform validate
+~~~
+
+The ALZ Template does set the default "provider "azurerm"" blocks subscriptions inside the corresponding github action via environment variables. Therefore we will need to create the same variable on our local PC in case we like to run the terraform plan without the need to modify the terraform code.
+
+~~~powershell
+$subIdBootStrap=az account list --query "[?name=='bootstrap'].id" -o tsv
+$env:ARM_SUBSCRIPTION_ID = $subIdBootStrap
+terraform plan -out=tfplan.01 -lock=false 
+~~~
 
 ### Commit and Pull requewst via github cli
 
 ~~~bash
-terraform fmt
-terraform validate
-terraform plan -out=tfplan-change-fw-sku
+# show me the current git branch
+git branch --show-current
 # get current git status
 git status
 # commit all your changes
@@ -41,10 +120,7 @@ git pull
 ~~~
 
 
-## Init Terraform
-
 ~~~powershell
-# before starting the terraform init we need to make sure to configure the state file to be stored in the storage account
 terraform init
 az login --use-device-code
 ~~~
