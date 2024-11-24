@@ -17,7 +17,7 @@ on:
 
 jobs:
   plan_and_apply:
-    uses: cptdx-net/.github/workflows/cd-template.yaml@main
+    uses: cptdx-net/alz-mgmt/.github/workflows/cd-template.yaml@main
     name: 'CD'
     permissions:
       id-token: write
