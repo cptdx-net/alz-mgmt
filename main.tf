@@ -37,6 +37,8 @@ module "hubnetworking" {
       address_space       = [var.hub_virtual_network_address_prefix]
       location            = local.starter_location
       resource_group_name = "rg-connectivity-${local.starter_location}"
+      resource_group_creation_enabled = false
+      resource_group_lock_enabled     = false
       firewall = {
         subnet_address_prefix            = var.firewall_subnet_address_prefix
         management_subnet_address_prefix = var.firewall_management_subnet_address_prefix
