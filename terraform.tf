@@ -10,7 +10,15 @@ terraform {
       version = "~> 1.13"
     }
   }
-  backend "azurerm" {}
+  backend "azurerm" {
+    use_azuread_auth     = true
+    resource_group_name  = "rg-alz-mgmt-state-germanywestcentral-001"
+    storage_account_name = "stoalzmgmger001zjln"
+    container_name       = "mgmt-tfstate"
+    key                  = "terraform.tfstate"
+    subscription_id      = "4896a771-b1ab-4411-bd94-3c8467f1991e"
+    tenant_id            = "ade68923-b72b-4190-8508-a19a58692001"
+  }
 }
 
 provider "azapi" {
