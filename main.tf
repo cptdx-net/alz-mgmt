@@ -44,12 +44,18 @@ module "hubnetworking" {
         sku_tier                         = "Basic"
         sku_name                         = "AZFW_VNet"
         zones                            = ["1", "2", "3"]
-        # default_ip_configuration = {
-        #   public_ip_config = {
-        #     zones = ["1", "2", "3"]
-        #     name  = "pip-hub-${local.starter_location}"
-        #   }
-        # }
+        default_ip_configuration = {
+          public_ip_config = {
+            zones = ["1", "2", "3"]
+            name  = "pip-hub-${local.starter_location}"
+          }
+        }
+        management_ip_configuration = {
+          public_ip_config = {
+            zones : ["1", "2", "3"]
+            name : "pip-fw-hub-${local.starter_location}"
+          }
+        }
       }
     }
   }
