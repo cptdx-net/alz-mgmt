@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate_and_plan:
-    uses: cptdx-net/alz-mgmt-templates/.github/workflows/ci-template.yaml@main
+    uses: cptdx-net/alz-mgmt/.github/workflows/ci-template.yaml@main
     name: 'CI'
     permissions:
       id-token: write

@@ -105,9 +105,9 @@ git branch --show-current
 git status
 # commit all your changes
 git add .
-git commit -m "Change fw sku in main.tf"
-git push --set-upstream origin change-fw-sku
-gh pr create --title "change fw sku to basic" --body "Change the current az fw sku to basic and remove lock" --base main
+git commit -m $branchName
+git push --set-upstream origin $branchName
+gh pr create --title $branchName --body $branchName --base main--base main
 ~~~
 
 Approve the pull request and merge it via the web interface.
