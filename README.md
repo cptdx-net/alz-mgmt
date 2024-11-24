@@ -1,8 +1,50 @@
 # alz-mgmt
 
+## Modify the README.md file
+
+~~~powershell
+cd cptdx.net # [OPTIONAL] make sure you are in the subfolder in case the repo is a submodule of another one
+git status
+# show the current branch
+git branch --show-current # should be main
+# create branch to change fw sku
+$branchName="new-readme-file"
+git branch $branchName
+# switch to the new branch
+git checkout $branchName
+~~~
+
+Modify the main.tf file to change the firewall sku to basic.
+
+### Commit and Pull requewst via github cli
 
 ~~~bash
+terraform fmt
+terraform validate
+terraform plan -out=tfplan-change-fw-sku
+# get current git status
 git status
+# commit all your changes
+git add .
+git commit -m "Change fw sku in main.tf"
+git push --set-upstream origin change-fw-sku
+gh pr create --title "change fw sku to basic" --body "Change the current az fw sku to basic and remove lock" --base main
+~~~
+
+Approve the pull request and merge it via the web interface.
+
+~~~bash
+# switch back to main
+git checkout main
+# pull the changes from the remote main branch
+git pull
+~~~
+
+
+## Init Terraform
+
+~~~powershell
+# before starting the terraform init we need to make sure to configure the state file to be stored in the storage account
 terraform init
 az login --use-device-code
 ~~~
