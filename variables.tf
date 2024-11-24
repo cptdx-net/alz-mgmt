@@ -48,6 +48,11 @@ variable "firewall_subnet_address_prefix" {
   default     = "10.0.0.0/24"
 }
 
+variable "firewall_management_subnet_address_prefix" {
+  description = "The IP address range for the basic firewall management subnet in CIDR format|8|cidr_range"
+  type        = string
+}
+
 variable "gateway_subnet_address_prefix" {
   description = "The IP address range for the gateway subnet in CIDR format|cidr_range"
   type        = string

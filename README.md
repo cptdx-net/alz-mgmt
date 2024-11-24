@@ -83,7 +83,7 @@ Init a local Terraform.
 
 ~~~powershell
 terraform init
-terraform plan -out=tfplan01 -lock=false
+terraform plan -out=tfplan.01 -lock=false
 terraform fmt
 terraform validate
 ~~~
@@ -130,30 +130,61 @@ az login --use-device-code
 
 ### New branch change-fw-sku
 
-~~~bash
+~~~powershell
 # show the current branch
 git branch --show-current # should be main
-# create branch to change fw sku
-git branch change-fw-sku
+$branchName="change-fw-sku-to-basic"
+git branch $branchName
 # switch to the new branch
-git checkout change-fw-sku
+git checkout $branchName
 ~~~
 
 Modify the main.tf file to change the firewall sku to basic.
 
-### Commit and Pull requewst via github cli
+#### Commit and Pull requewst via github cli
 
-~~~bash
+~~~powershell
 terraform fmt
 terraform validate
-terraform plan -out=tfplan-change-fw-sku
+~~~
+
+Modify the main.tf file to change the firewall sku to basic.
+
+~~~hcl
+firewall = {
+subnet_address_prefix = var.firewall_subnet_address_prefix
+management_subnet_address_prefix = var.firewall_management_subnet_address_prefix
+sku_tier              = "Basic"
+sku_name              = "AZFW_VNet"
+zones                 = ["1", "2", "3"]
+default_ip_configuration = {
+    public_ip_config = {
+    zones = ["1", "2", "3"]
+    name  = "pip-hub-${local.starter_location}"
+    }
+}
+}
+~~~
+
+Define the corresponding variables inside the variables.tf file.
+And set the values inside the terraform.tfvars.json
+
+~~~powershell
+terraform fmt
+terraform validate
+terraform plan -lock=false
+~~~
+
+### Commit and Pull requewst via github cli
+
+~~~powershell
 # get current git status
 git status
 # commit all your changes
 git add .
-git commit -m "Change fw sku in main.tf"
-git push --set-upstream origin change-fw-sku
-gh pr create --title "change fw sku to basic" --body "Change the current az fw sku to basic and remove lock" --base main
+git commit -m $branchName
+git push --set-upstream origin $branchName
+gh pr create --title $branchName --body $branchName --base main
 ~~~
 
 Approve the pull request and merge it via the web interface.
