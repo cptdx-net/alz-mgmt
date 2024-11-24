@@ -53,7 +53,7 @@ module "hubnetworking" {
         management_ip_configuration = {
           public_ip_config = {
             zones = ["1", "2", "3"]
-            name = "pip-fw-hub-${local.starter_location}"
+            name  = "pip-fw-hub-${local.starter_location}"
           }
         }
       }
