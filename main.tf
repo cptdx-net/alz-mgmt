@@ -41,21 +41,22 @@ module "hubnetworking" {
       firewall = {
         subnet_address_prefix            = var.firewall_subnet_address_prefix
         management_subnet_address_prefix = var.firewall_management_subnet_address_prefix
-        sku_tier                         = "Basic"
-        sku_name                         = "AZFW_VNet"
-        zones                            = ["1", "2", "3"]
+        # sku_tier                         = "Basic"
+        sku_tier = "Standard"
+        sku_name = "AZFW_VNet"
+        zones    = ["1", "2", "3"]
         default_ip_configuration = {
           public_ip_config = {
             zones = ["1", "2", "3"]
             name  = "pip-hub-${local.starter_location}"
           }
         }
-        management_ip_configuration = {
-          public_ip_config = {
-            zones = ["1", "2", "3"]
-            name  = "pip-hub-fw-${local.starter_location}"
-          }
-        }
+        # management_ip_configuration = {
+        #   public_ip_config = {
+        #     zones = ["1", "2", "3"]
+        #     name  = "pip-hub-fw-${local.starter_location}"
+        #   }
+        # }
       }
     }
   }
