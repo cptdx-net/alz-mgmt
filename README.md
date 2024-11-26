@@ -128,9 +128,12 @@ az login --use-device-code
 
 ## Change Firewall SKU
 
+> IMPORTANT: Basic does not work because of https://github.com/Azure/terraform-azurerm-hubnetworking/pull/79
+
 ### New branch change-fw-sku
 
 ~~~powershell
+huhu
 # show the current branch
 git branch --show-current # should be main
 $branchName="change-fw-sku-to-basic"
